@@ -22,6 +22,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import javax.ws.rs.PathParam;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rest.dto.Course;
 import com.rest.dto.Email;
@@ -47,6 +48,10 @@ public class MyResource{
     	
 		System.out.println("hhhhh");
 		System.out.println(instructor); 
+		
+		String pwd = instructor.getPassword();
+		instructor.setPassword(securepassword(pwd));
+		
     	InstructorDAO instructorDAO = new InstructorDAO();
     	instructorDAO.register(instructor);
     	
@@ -60,10 +65,21 @@ public class MyResource{
 		
 		System.out.println(learner); 
 		
+		String pwd = learner.getPassword();
+		learner.setPassword(securepassword(pwd));
+		
 		LearnerDAO learnerDAO = new LearnerDAO();
   	    learnerDAO.register(learner);
     	
     }
+	
+	public String securepassword(String pwd){
+		char[] chars = pwd.toCharArray();
+		for (int i=0; i<chars.length; i++){
+			chars[i] += 15;}
+			String str2 = String.valueOf(chars);
+		return str2 ;
+	}
 	 @Path("registerSubject")
 	    @POST
 	    @Produces(MediaType.TEXT_PLAIN)
@@ -83,8 +99,17 @@ public class MyResource{
 	public Learner getUserPassJ(@PathParam("mail_id") String mail_id,@PathParam("password") String password){
 		
 		System.out.println("recieved in path params: " + mail_id + " "+ password);
+		System.out.println(mail_id);
+		System.out.println(password);
 		LearnerDAO  learnerDAO = new LearnerDAO();
-		Learner learner = learnerDAO.getUserPass(mail_id,password);
+		
+		char[] chars = password.toCharArray();
+		System.out.println(password);
+		for (int i=0; i<chars.length; i++){
+			chars[i] += 15;}
+		String str2 = String.valueOf(chars);
+		
+		Learner learner = learnerDAO.getUserPass(mail_id,str2);
 		return learner;
 		
     	 }
@@ -95,8 +120,17 @@ public class MyResource{
 	public Instructor getUserPassI(@PathParam("mail_id") String mail_id,@PathParam("password") String password){
 		
 		System.out.println("recieved in path params: " + mail_id + " "+ password);
+		
 		InstructorDAO  instructorDAO = new InstructorDAO();
-		Instructor instructor = instructorDAO.getUserPass(mail_id,password);
+		char[] chars = password.toCharArray();
+		System.out.println(password);
+		for (int i=0; i<chars.length; i++){
+			chars[i] += 15;}
+		String str2 = String.valueOf(chars);
+	
+		
+		
+		Instructor instructor = instructorDAO.getUserPass(mail_id,str2);
 		return instructor;
 		
     	 }
@@ -196,6 +230,8 @@ public class MyResource{
 		CourseDAO   courseDAO = new CourseDAO();
 		List<Course> courseList = courseDAO.getImageList(subject_id);
 		
+		System.out.println(courseList);
+		
 		return (ArrayList<Course>) courseList;
 		
 		
@@ -223,50 +259,41 @@ public class MyResource{
 		return (ArrayList<SessionDetails>) sessionList;
 
 	}
-/*	@Path("updateEmp")
-	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
-	public void updateEmp(Learner learner){
-		System.out.println("Data Recieved in update : " + learner); 
-		learnerDaoH empDao = new EmployeeDaoH();
-		empDao.updateEmp(learner);
-		
-	}	*/
-	@Path("email")
-	@POST
-	@Produces(MediaType.APPLICATION_JSON)
-	public void getmails(Email emails){
-		
-	 System.out.println(emails);
-    	emailSending email = new emailSending();
-    	email.sendEmail(emails);
-    	
-    		
+	    @Path("email")
+		@POST
+		@Produces(MediaType.APPLICATION_JSON)
+		public void getmails(Email emails){
+			
+		 System.out.println(emails);
+	    	emailSending email = new emailSending();
+	    	email.sendEmail(emails);
+	    	
+	    		
 
-	}
-    
-    @Path("updateEmp")
-	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
-	public void updateEmp(Instructor instructor){
-		System.out.println("Data recieved in update"+ instructor);
+		}
+	    
+	    @Path("updateEmp")
+		@PUT
+		@Consumes(MediaType.APPLICATION_JSON)
+		public void updateEmp(Instructor instructor){
+			System.out.println("Data recieved in update"+ instructor);
 
-		InstructorDAO instructorDAO = new InstructorDAO();
-		instructorDAO.updateEmployee(instructor);
+			InstructorDAO instructorDAO = new InstructorDAO();
+			instructorDAO.updateEmployee(instructor);
 
 
 
-	}
-    @Path("updateEmp1")
-	@PUT
-	@Consumes(MediaType.APPLICATION_JSON)
-	public void updateEmp(Learner learner){
-		System.out.println("Data recieved in update"+ learner);
+		}
+	    @Path("updateEmp1")
+		@PUT
+		@Consumes(MediaType.APPLICATION_JSON)
+		public void updateEmp(Learner learner){
+			System.out.println("Data recieved in update"+ learner);
 
-		LearnerDAO learnerDAO = new LearnerDAO();
-		learnerDAO.updateEmployee1(learner);
+			LearnerDAO learnerDAO = new LearnerDAO();
+			learnerDAO.updateEmployee1(learner);
 
 
 
-	}
+		}
 }
